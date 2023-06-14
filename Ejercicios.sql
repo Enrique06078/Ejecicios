@@ -1,0 +1,85 @@
+create table tb_ab(
+id number (12),
+nombre_p varchar(50),
+tipo varchar (35),
+costo number(10));
+
+    drop table tb_ab;
+    select*from tb_ab;
+
+
+create table tb_ba(
+descripcion varchar(100));
+
+    drop table tb_ba;
+    select*from tb_ba;
+
+insert into tb_ab values(001, 'Donitas', 'Pan', 20);
+insert into tb_ab values(002, 'Rebanadas', 'Pan', 10);
+insert into tb_ab values(003, 'Mantecadas', 'Pan', 25);
+insert into tb_ab values(004, 'Nito', 'Pan', 15);
+insert into tb_ab values(005, 'Buñuelos', 'Pan', 20);
+insert into tb_ab values(021, 'Doritos', 'Botanas', 15);
+insert into tb_ab values(022, 'Paketaxo', 'Botanas', 56);
+insert into tb_ab values(023, 'Sabritas Adobadas', 'Botanas', 35);
+insert into tb_ab values(024, 'Crujitos', 'Botanas', 15);
+insert into tb_ab values(025, 'Sabritones', 'Botanas', 50);
+insert into tb_ab values(051, 'Pulparindo', 'Dulce', 8);
+insert into tb_ab values(052, 'Picafresa', 'Dulce', 2);
+insert into tb_ab values(053, 'Mazapan', 'Dulce', 8);
+insert into tb_ab values(054, 'Panditas', 'Dulce', 18);
+insert into tb_ab values(055, 'Dragoncitos', 'Dulce', 3);
+
+
+create or replace trigger tri_pri
+after insert or delete or update
+on tb_ab
+begin
+    if inserting then
+        insert into tb_ba values ('Se ha insertado un dato en tabla A');
+    end if;
+    if deleting then
+        insert into tb_ba values ('Se ha borrado un dato en tabla A');
+    end if;
+    if updating then
+        insert into tb_ba values ('Se ha actualizado un dato en tabla A');
+    end if;
+end tri_pri;
+
+    delete from tb_ab where id=055;
+    update tb_ab set costo=15 where id=054;
+    
+    drop trigger tri_pri;
+
+/*------------------------------------------------------------------------------------------------------*/
+
+create or replace trigger tri_seg
+after insert
+on tb_ab
+for each row
+begin
+    if (:new.nombre_p like 'D%') then
+        insert into tb_ba values('Se agregó un producto que su nombre empieza con D, el '|| sysdate);
+    end if;
+end tri_seg;
+
+    insert into tb_ab values(055, 'Dragoncitos', 'Dulce', 3);
+
+    drop trigger tri_seg;
+
+
+/*___________________________________________________________________________________________________________*/
+
+create or replace trigger tri_ter
+after delete
+on tb_ab
+for each row
+begin
+    if(:old.costo<=12) then
+        insert into tb_ba values('Se eliminó un producto humilde que quería comprar con lo que tenia de mi pasaje :,c ');
+    end if;
+end tri_ter;
+
+    delete from tb_ab where id=053;
+
+    drop trigger tri_ter;
